@@ -1,46 +1,62 @@
 <?php
 
+use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
-/*
-|--------------------------------------------------------------------------
-| Web Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider and all of them will
-| be assigned to the "web" middleware group. Make something great!
-|
-*/
-
-// Route dasar -> halaman utama
+// ✅ Home
 Route::get('/', function () {
     return view('welcome');
 })->name('home');
 
-// Named route -> halaman About
+// ✅ About
 Route::get('/about', function () {
     return view('about');
 })->name('about');
 
-// Named route -> halaman Contact
+// ✅ Contact
 Route::get('/contact', function () {
     return view('contact');
 })->name('contact');
 
-// Route dengan parameter (contoh profil user)
+// ✅ User profile dengan parameter ID
 Route::get('/user/{id}', function ($id) {
-    return "Ini halaman profil User dengan ID: " . $id;
+    return "Profil User dengan ID: " . $id;
 })->name('user.profile');
 
-// Route dengan parameter opsional
-Route::get('/greeting/{name?}', function ($name = "Guest") {
-    return "Halo, " . $name;
+// ✅ Greeting dengan parameter opsional
+Route::get('/greeting/{name?}', function ($name = "Default") {
+    return "Greeting " . $name;
 })->name('greeting');
 
-// Grouping route (prefix admin)
-Route::prefix('admin')->group(function () {
-    Route::get('/edit', function () {
-        return view('manage.edit');
-    })->name('admin.edit');
+// ✅ Admin edit
+Route::get('/admin/edit', function () {
+    return "Halaman Edit Admin";
+})->name('admin.edit');
+
+// ✅ Dashboard (hanya untuk user login & verified)
+Route::get('/dashboard', function () {
+    return view('dashboard');
+})->middleware(['auth', 'verified'])->name('dashboard');
+
+// ✅ Profile (hanya untuk user login)
+Route::middleware('auth')->group(function () {
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+});
+
+require __DIR__.'/auth.php';
+
+// ✅ Admin dashboard (auth + admin middleware)
+Route::middleware(['auth', 'admin'])->group(function () {
+    Route::get('/admin/dashboard', function () {
+        return "Selamat datang, Admin!";
+    });
+});
+
+// ✅ User dashboard (auth middleware)
+Route::middleware(['auth'])->group(function () {
+    Route::get('/user/dashboard', function () {
+        return "Selamat datang, User!";
+    });
 });
