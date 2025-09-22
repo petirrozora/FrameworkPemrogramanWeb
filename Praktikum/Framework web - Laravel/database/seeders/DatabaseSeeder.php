@@ -13,11 +13,8 @@ class DatabaseSeeder extends Seeder
      * Seed the application's database.
      */
     public function run(): void
-{
-    User::create([
-        'name' => 'Admin',
-        'email' => 'admin@example.com',
-        'password' => Hash::make('password123'),
-    ]);
-}
+    {
+        $this->call(UserSeeder::class);
+    }
+
 }

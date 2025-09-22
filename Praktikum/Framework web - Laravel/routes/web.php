@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\ProductController;
 use Illuminate\Support\Facades\Route;
 
 // ✅ Home
@@ -48,7 +49,7 @@ Route::middleware('auth')->group(function () {
 require __DIR__.'/auth.php';
 
 // ✅ Admin dashboard (auth + admin middleware)
-Route::middleware(['auth', 'admin'])->group(function () {
+Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/admin/dashboard', function () {
         return "Selamat datang, Admin!";
     });
@@ -60,3 +61,13 @@ Route::middleware(['auth'])->group(function () {
         return "Selamat datang, User!";
     });
 });
+
+// ✅ Path rahasia (khusus admin)
+Route::get('/rahasia', function () {
+    return 'ini path rahasia';
+})->middleware(['auth','verified','role:admin'])->name('rahasia');
+
+
+Route::get('/product/{angka}', [ProductController::class, 'index'])
+    ->middleware(['auth','role:admin,owner'])
+    ->name('product.index');
