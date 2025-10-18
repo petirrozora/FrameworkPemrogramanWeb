@@ -2,7 +2,14 @@
 
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\UtsController;
 use Illuminate\Support\Facades\Route;
+
+/*
+|--------------------------------------------------------------------------
+| Web Routes
+|--------------------------------------------------------------------------
+*/
 
 // ✅ Home
 Route::get('/', function () {
@@ -64,10 +71,23 @@ Route::middleware(['auth'])->group(function () {
 
 // ✅ Path rahasia (khusus admin)
 Route::get('/rahasia', function () {
-    return 'ini path rahasia';
+    return 'Ini path rahasia';
 })->middleware(['auth','verified','role:admin'])->name('rahasia');
 
+// ✅ Route utama UTS
+Route::get('/uts', [UtsController::class, 'index'])->name('uts.index');
 
-Route::get('/product/{angka}', [ProductController::class, 'index'])
-    ->middleware(['auth','role:admin,owner'])
-    ->name('product.index');
+// ✅ Menu UTS Pemrograman Web
+Route::get('/uts/web', [UtsController::class, 'web'])->name('uts.web');
+
+// ✅ Menu UTS Database
+Route::get('/uts/database', [UtsController::class, 'database'])->name('uts.database');
+
+
+// ======================================================================
+// ✅ CRUD PRODUCT (Lengkap)
+// Dibatasi hanya untuk user dengan role admin atau owner
+// ======================================================================
+Route::middleware(['auth', 'role:admin,owner'])->group(function () {
+    Route::resource('product', ProductController::class);
+});
